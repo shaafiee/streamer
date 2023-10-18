@@ -1,0 +1,56 @@
+
+<html>
+<head>
+	<style>
+		#mainframe {
+			display: block;
+			min-height: 600px;
+			width: 95%;
+		}
+	</style>
+</head>
+<body>
+
+<script>
+	//let pieces = location.pathname.split('?');
+	let pieces = location.search.split('?');
+	let sourceFile = "";
+	let updateInternval = 60000;
+	function updateData() {
+		fetch(sourceFile)
+		.then(data => {
+			return data.text();
+		})
+		.then(text => {
+			let lines = text.split("\n");
+			let mainframe = document.getElementById('mainframe');
+			mainframe.innerHTML = "";
+			for (let j = 0; j < lines.length; j++) {
+				let line = document.createElement("div");
+				line.setAttribute("class", "line");
+				line.innerHTML = lines[j];
+				mainframe.append(line);
+			}
+		});
+		window.setTimeout(updateData, updateInterval);
+	}
+	for (let i = 1; i < pieces.length; i++) {
+		let temps = pieces[i].split('=');
+		if (temps[0] == 'source') {
+			sourceFile = decodeURI(temps[1]);
+		}
+		if (temps[0] == 'interval') {
+			updateInterval = decodeURI(temps[1]);
+		}
+	}
+	if (sourceFile != "") {
+		updateData();
+	}
+</script>
+
+<div id="mainframe">
+</div>
+
+</body>
+</html>
+
